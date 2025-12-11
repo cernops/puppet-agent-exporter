@@ -7,7 +7,10 @@ Description=Puppet Agent Exporter
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/puppet-agent-exporter
+# Fallback when environment file does not exist
+Environment=OPTIONS=
+EnvironmentFile=-/etc/sysconfig/puppet-agent-exporter
+ExecStart=/usr/bin/puppet-agent-exporter $OPTIONS
 Restart=on-failure
 RestartSec=5s
 

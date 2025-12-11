@@ -1,0 +1,1 @@
+OPTIONS="--puppet.config-section agent"
