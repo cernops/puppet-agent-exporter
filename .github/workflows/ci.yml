@@ -10,11 +10,11 @@ on:
   pull_request:
 env:
   # renovate: datasource=github-releases depName=golangci/golangci-lint versioning=semver-coerced
-  GOLANGCI_LINT_VERSION: "v2.11.3"
+  GOLANGCI_LINT_VERSION: "v2.13.1"
   # renovate: datasource=github-releases depName=goreleaser/goreleaser versioning=semver-coerced
-  GORELEASER_VERSION: "v2.14.3"
+  GORELEASER_VERSION: "v2.18.0"
   # renovate: datasource=github-releases depName=ko-build/ko versioning=semver-coerced
-  KO_VERSION: "v0.18.1"
+  KO_VERSION: "v0.19.1"
 jobs:
   go:
     name: Go
@@ -25,38 +25,38 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
       - name: Set up Go
-        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version-file: 'go.mod'
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9
         with:
           version: ${{ env.GOLANGCI_LINT_VERSION }}
       - name: Run tests
         run: go test -v ./...
       - name: Build (Snapshot)
-        uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7
+        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         with:
           version: ${{ env.GORELEASER_VERSION }}
           args: --clean --skip=ko,publish --snapshot
       - name: Upload Artifacts (Snapshot)
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         with:
           name: dist
           path: dist/*
       - name: Set up ko
-        uses: ko-build/setup-ko@d006021bd0c28d1ce33a07e7943d48b079944c8d # v0.9
+        uses: ko-build/setup-ko@61b4d1d396f5b2e7d6bb6fefdce3dc38d1a13445 # v0.10
         if: startsWith(github.ref, 'refs/tags/')
         with:
           version: ${{ env.KO_VERSION }}
       - name: Release
-        uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7
+        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7
         if: startsWith(github.ref, 'refs/tags/')
         with:
           version: ${{ env.GORELEASER_VERSION }}
